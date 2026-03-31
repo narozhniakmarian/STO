@@ -163,7 +163,8 @@
  }
 
  .lang-switcher {
-     display: flex;
+     display: none;
+     /* display: flex; */
      align-items: center;
      gap: 2px;
      background: rgba(255, 255, 255, 0.07);
@@ -173,6 +174,7 @@
  }
 
  .lang-btn {
+     display: none;
      font-size: 11px;
      font-weight: 700;
      letter-spacing: 1px;
@@ -253,27 +255,27 @@
      cursor: pointer;
  }
 
-.mobile-menu-lang {
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 6px 0 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    margin-bottom: 8px;
-}
+ .mobile-menu-lang {
+     display: none;
+     align-items: center;
+     justify-content: space-between;
+     gap: 12px;
+     padding: 6px 0 12px;
+     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+     margin-bottom: 8px;
+ }
 
-.mobile-menu-lang-label {
-    font-size: 12px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.6);
-    font-weight: 700;
-}
+ .mobile-menu-lang-label {
+     font-size: 12px;
+     letter-spacing: 1px;
+     text-transform: uppercase;
+     color: rgba(255, 255, 255, 0.6);
+     font-weight: 700;
+ }
 
-.mobile-menu-lang .lang-switcher {
-    background: rgba(255, 255, 255, 0.1);
-}
+ .mobile-menu-lang .lang-switcher {
+     background: rgba(255, 255, 255, 0.1);
+ }
 
  /* ===================== PAGES ===================== */
  .page {
@@ -287,11 +289,11 @@
  /* ===================== HERO ===================== */
  #hero {
      position: relative;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    padding-top: 72px;
+     min-height: 100vh;
+     display: flex;
+     align-items: center;
+     overflow: hidden;
+     padding-top: 72px;
  }
 
  .hero-bg {
@@ -1821,12 +1823,12 @@
 
  /* ===================== RESPONSIVE ===================== */
  @media (max-width: 900px) {
-    .hero-frame {
-        transform: scale(0.9);
-        transform-origin: center;
-    }
+     .hero-frame {
+         transform: scale(0.9);
+         transform-origin: center;
+     }
 
-    nav.desktop-nav {
+     nav.desktop-nav {
          display: none;
      }
 
@@ -1838,13 +1840,13 @@
          display: none;
      }
 
-    .header-controls .lang-switcher {
-        display: none;
-    }
+     .header-controls .lang-switcher {
+         display: none;
+     }
 
-    .mobile-menu-lang {
-        display: flex;
-    }
+     .mobile-menu-lang {
+         display: flex;
+     }
 
      .about-grid {
          grid-template-columns: 1fr;
@@ -1885,9 +1887,9 @@
  }
 
  @media (max-width: 600px) {
-    .hero-frame {
-        transform: scale(0.86);
-    }
+     .hero-frame {
+         transform: scale(0.86);
+     }
 
      section {
          padding: 60px 16px;

@@ -22,7 +22,7 @@ const servicesData = [
     { pl: "Naprawa i wymiana opon", uk: "Ремонт та заміна шин", icon: '<i class="fa-solid fa-circle-notch"></i>', priceFrom: 80, priceTo: 300 },
 ];
 const reviewsData = [
-    { name: "Tomasz K.", date: "2024-11-15", stars: 5, pl: "Świetna obsługa! Diagnoza szybka i precyzyjna, cena uczciwa. Polecam każdemu w Opolu.", uk: "Чудове обслуговування! Діагностика швидка та точна, ціна чесна. Рекомендую кожному в Ополе." },
+    { name: "Tomasz K.", date: "2024-11-15", stars: 5, pl: "Świetna obsługa! Diagnoza szybka i precyzyjna, cena uczciwa. Polecam każdemu w Miasto.", uk: "Чудове обслуговування! Діагностика швидка та точна, ціна чесна. Рекомендую кожному в Ополе." },
     { name: "Marta W.", date: "2024-10-08", stars: 5, pl: "Byłam sceptyczna, ale zostałam mile zaskoczona. Profesjonalizm na każdym kroku. Mechanicy tłumaczą co robią.", uk: "Була скептичною, але приємно здивована. Професіоналізм на кожному кроці. Механіки пояснюють, що роблять." },
     { name: "Andrzej P.", date: "2024-09-22", stars: 5, pl: "Trzecia wizyta i zawsze na 5+. Szybko, tanio, rzetelnie. Mój stały serwis od teraz.", uk: "Третій візит і завжди на 5+. Швидко, дешево, надійно. Мій постійний сервіс відтепер." },
     { name: "Iryna S.", date: "2024-08-30", stars: 5, pl: "Jestem z Ukrainy i bałam się bariery językowej. Tu mówią też po ukraińsku! Naprawa klimatyzacji – super.", uk: "Я з України і боялася мовного бар'єру. Тут говорять і по-українськи! Ремонт кондиціонера — супер." },
@@ -549,18 +549,18 @@ function openService(idx) {
     const s = servicesData[idx];
     document.getElementById('sd-title').textContent = currentLang === 'pl' ? s.pl : s.uk;
     document.getElementById('sd-subtitle').textContent = currentLang === 'pl'
-        ? 'Profesjonalna usługa mechaniczna w serwisie MELKUR w Opolu.'
-        : 'Професійна механічна послуга в сервісі MELKUR в Ополе.';
+        ? 'Profesjonalna usługa mechaniczna w serwisie -//- w Miasto.'
+        : 'Професійна механічна послуга в сервісі -//- в Ополе.';
     document.getElementById('sd-price').textContent = `od ${s.priceFrom} – do ${s.priceTo} zł`;
 
     const descs = {
         pl: [
-            `<h2>O usłudze</h2><p>Usługa <strong>${s.pl}</strong> w serwisie MELKUR jest wykonywana przez wykwalifikowanych mechaników z wieloletnim doświadczeniem. Korzystamy z nowoczesnych urządzeń diagnostycznych i oryginalnych lub równorzędnych części zamiennych.</p>`,
+            `<h2>O usłudze</h2><p>Usługa <strong>${s.pl}</strong> w serwisie -//- jest wykonywana przez wykwalifikowanych mechaników z wieloletnim doświadczeniem. Korzystamy z nowoczesnych urządzeń diagnostycznych i oryginalnych lub równorzędnych części zamiennych.</p>`,
             `<h2>Przebieg usługi</h2><p>1. Przyjęcie pojazdu i wstępna ocena stanu technicznego.<br>2. Szczegółowa diagnoza i przygotowanie kosztorysu.<br>3. Wykonanie naprawy / usługi po zatwierdzeniu przez klienta.<br>4. Kontrola jakości i test końcowy.<br>5. Wydanie pojazdu z dokumentacją.</p>`,
             `<h2>Gwarancja</h2><p>Na każdą wykonywaną usługę udzielamy gwarancji. Szczegóły gwarancji ustalane są indywidualnie przy odbiorze pojazdu.</p>`
         ],
         uk: [
-            `<h2>Про послугу</h2><p>Послуга <strong>${s.uk}</strong> в сервісі MELKUR виконується кваліфікованими механіками з багаторічним досвідом. Ми використовуємо сучасне діагностичне обладнання та оригінальні або рівноцінні запасні частини.</p>`,
+            `<h2>Про послугу</h2><p>Послуга <strong>${s.uk}</strong> в сервісі -//- виконується кваліфікованими механіками з багаторічним досвідом. Ми використовуємо сучасне діагностичне обладнання та оригінальні або рівноцінні запасні частини.</p>`,
             `<h2>Перебіг послуги</h2><p>1. Прийом автомобіля та попередня оцінка технічного стану.<br>2. Детальна діагностика та підготовка кошторису.<br>3. Виконання ремонту / послуги після затвердження клієнтом.<br>4. Контроль якості та фінальне тестування.<br>5. Видача автомобіля з документацією.</p>`,
             `<h2>Гарантія</h2><p>На кожну виконувану послугу ми надаємо гарантію. Деталі гарантії обговорюються індивідуально при прийомі автомобіля.</p>`
         ]
@@ -846,7 +846,7 @@ function showToast(type, title, msg, gcal = false, date = null, service = null) 
     if (gcal && date && service) {
         const sName = currentLang === 'pl' ? service.pl : service.uk;
         const dtStr = date.toISOString().replace(/-|:|\.\d{3}/g, '').slice(0, 8);
-        const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('MELKUR - ' + sName)}&dates=${dtStr}/${dtStr}&details=${encodeURIComponent('Serwis MELKUR, Wrocławska 102, Opole. Tel: 510 575 008')}&location=${encodeURIComponent('Wrocławska 102, Opole')}`;
+        const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('-//- - ' + sName)}&dates=${dtStr}/${dtStr}&details=${encodeURIComponent('Serwis -//-, Miasto. Tel: 000 000 000')}&location=${encodeURIComponent(' Miasto')}`;
         const gcalTxt = currentLang === 'pl' ? '📅 Dodaj do Google Calendar' : '📅 Додати до Google Calendar';
         gcalHtml = `<a class="toast-gcal" href="${gcalUrl}" target="_blank">${gcalTxt}</a>`;
     }
@@ -890,7 +890,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (fb) {
         fb.innerHTML = `
           <p>
-            © 2026 MELKUR Serwis Samochodowy.
+            © 2026 -//- Serwis Samochodowy.
             <span data-pl="Wszystkie prawa zastrzeżone." data-uk="Всі права захищені.">Wszystkie prawa zastrzeżone.</span>
           </p>
           <div class="footer-legal-links">
@@ -910,7 +910,7 @@ window.addEventListener('DOMContentLoaded', () => {
               <h1 data-pl="Polityka prywatności" data-uk="Політика конфіденційності">Polityka prywatności</h1>
               <p data-pl="Data obowiązywania: 01.01.2025" data-uk="Дата набуття чинності: 01.01.2025">Data obowiązywania: 01.01.2025</p>
               <h2 data-pl="1. Administrator danych" data-uk="1. Адміністратор даних">1. Administrator danych</h2>
-              <p data-pl="Administratorem danych jest MELKUR Serwis Samochodowy, Wrocławska 102, Opole. Kontakt: 510 575 008." data-uk="Адміністратором даних є MELKUR Serwis Samochodowy, Wrocławska 102, Ополе. Контакт: 510 575 008.">Administratorem danych jest MELKUR Serwis Samochodowy, Wrocławska 102, Opole. Kontakt: 510 575 008.</p>
+              <p data-pl="Administratorem danych jest -//- Serwis Samochodowy, Miasto. Kontakt: 0000000." data-uk="Адміністратором даних є -//- Serwis Samochodowy, Wrocławska 102,Miasto. Контакт: 0000000.">Administratorem danych jest -//- Serwis Samochodowy, MiastoMiasto. Kontakt: 0000000.</p>
               <h2 data-pl="2. Zakres i cel przetwarzania" data-uk="2. Обсяг і мета обробки">2. Zakres i cel przetwarzania</h2>
               <p data-pl="Przetwarzamy dane przekazane w formularzu rezerwacji i kontaktu wyłącznie w celu obsługi zapytania i realizacji usług." data-uk="Ми обробляємо дані, надані у формі бронювання та контакту, виключно з метою обробки запиту та надання послуг.">Przetwarzamy dane przekazane w formularzu rezerwacji i kontaktu wyłącznie w celu obsługi запytania i realizacji usług.</p>
               <h2 data-pl="3. Podstawy prawne" data-uk="3. Правові підстави">3. Podstawy prawne</h2>
