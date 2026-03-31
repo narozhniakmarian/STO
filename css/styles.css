@@ -265,11 +265,11 @@
  /* ===================== HERO ===================== */
  #hero {
      position: relative;
-     min-height: 100vh;
-     display: flex;
-     align-items: center;
-     overflow: hidden;
-     padding-top: 72px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding-top: 72px;
  }
 
  .hero-bg {
@@ -287,6 +287,67 @@
      object-fit: cover;
      object-position: center;
      opacity: 0.35;
+ }
+
+ /* Hero Animation Container */
+ .hero-animation-container {
+     position: absolute;
+     inset: 0;
+     width: 100%;
+     height: 100%;
+     overflow: hidden;
+     z-index: 1;
+     display: none;
+     /* Hidden by default, shown via JS */
+ }
+
+ .hero-animation-container.is-active {
+     display: block;
+ }
+
+ /* When animation is active, hide the static hero-img */
+ .hero-animation-container.is-active~.hero-img,
+ .hero-animation-container.is-active+.hero-img {
+     display: none;
+ }
+
+ .hero-frame {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+     object-position: center;
+     opacity: 0.5;
+     transition: opacity 0.1s linear;
+ }
+
+ /* No-JS fallback: show static image, hide animation container */
+ .no-js .hero-animation-container {
+     display: none !important;
+ }
+
+ .no-js .hero-img {
+     display: block !important;
+ }
+
+ /* Hero animate elements - for scroll-based text animations */
+ .hero-animate-element {
+     transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+     will-change: opacity, transform;
+ }
+
+ .hero-animate-element.is-faded {
+     opacity: 0 !important;
+     pointer-events: none;
+ }
+
+ /* fade-up: title and subtitle move up and fade out */
+ .hero-animate-element[data-animation="fade-up"].is-faded {
+     transform: translateY(-40px);
+ }
+
+ /* fade-down: badge, buttons, stats move down and fade out */
+ .hero-animate-element[data-animation="fade-down"].is-faded {
+     transform: translateY(30px);
  }
 
  .hero-overlay {

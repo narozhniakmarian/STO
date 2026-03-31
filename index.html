@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pl">
+<html lang="pl" class="no-js">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -201,10 +201,24 @@
       <!-- HERO -->
       <section id="hero">
         <div class="hero-bg"></div>
-        <img src="heroPage.png" alt="Melkur Serwis" class="hero-img" />
+        <!-- Animation frames container -->
+        <div class="hero-animation-container" id="hero-animation-container">
+          <img
+            id="hero-frame"
+            class="hero-frame"
+            src="images/hero_animate/frame_000021.jpeg"
+            alt="Hero Animation"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+        <!-- Fallback image for no-JS -->
+        <noscript>
+          <img src="images/heroPage.png" alt="Melkur Serwis" class="hero-img" style="opacity: 0.35;" />
+        </noscript>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-          <div class="hero-badge">
+          <div class="hero-badge hero-animate-element" data-animation="fade-down">
             <span class="hero-badge-dot"></span>
             <span
               data-pl="Opole, Wrocławska 102"
@@ -213,21 +227,23 @@
             >
           </div>
           <h1
-            class="hero-title"
+            class="hero-title hero-animate-element"
+            data-animation="fade-up"
             data-pl="Profesjonalny serwis<br>dla Twojego <span>samochodu</span>"
             data-uk="Професійний сервіс<br>для Вашого <span>автомобіля</span>"
           >
             Profesjonalny serwis<br />dla Twojego <span>samochodu</span>
           </h1>
           <p
-            class="hero-sub"
+            class="hero-sub hero-animate-element"
+            data-animation="fade-up"
             data-pl="Zaufaj doświadczonej ekipie mechaników. Diagnozujemy, naprawiamy i dbamy o Twoje auto z pasją i precyzją."
             data-uk="Довірте свій автомобіль досвідченій команді механіків. Ми діагностуємо, ремонтуємо та доглядаємо за вашим авто з пристрастю та точністю."
           >
             Zaufaj doświadczonej ekipie mechaników. Diagnozujemy, naprawiamy i
             dbamy o Twoje auto z pasją i precyzją.
           </p>
-          <div class="hero-btns">
+          <div class="hero-btns hero-animate-element" data-animation="fade-down">
             <button class="btn-primary" onclick="scrollTo('services')">
               <span data-pl="Nasze usługi" data-uk="Наші послуги"
                 >Nasze usługi</span
@@ -247,7 +263,7 @@
               >
             </button>
           </div>
-          <div class="hero-stats">
+          <div class="hero-stats hero-animate-element" data-animation="fade-down">
             <div class="hero-stat">
               <span class="hero-stat-num">5+</span>
               <span
@@ -516,11 +532,11 @@
               MARKI SAMOCHODÓW NAPRAWIANE PRZEZ MELKUR
             </h2>
           </div>
-          <p
+          <!-- <p
             class="brands-subtitle animate-on-scroll"
             data-pl="Alfa Romeo, Audi, BMW, Chevrolet, Chrysler, Citroen, Dacia, Daewoo, Dodge, Ferrari, Fiat, Ford, Honda, Hyundai, Infiniti, Isuzu, Iveco, Jaguar, Jeep, Kia, Lamborghini, Lancia, Land Rover, Lexus, Mazda, Mercedes-Benz, Mini, Mitsubishi, Nissan, Opel, Peugeot, Porsche, Renault, Rover, Saab, Seat, Skoda, Smart, Subaru, Suzuki, Toyota, Volkswagen, Volvo."
             data-uk="Alfa Romeo, Audi, BMW, Chevrolet, Chrysler, Citroen, Dacia, Daewoo, Dodge, Ferrari, Fiat, Ford, Honda, Hyundai, Infiniti, Isuzu, Iveco, Jaguar, Jeep, Kia, Lamborghini, Lancia, Land Rover, Lexus, Mazda, Mercedes-Benz, Mini, Mitsubishi, Nissan, Opel, Peugeot, Porsche, Renault, Rover, Saab, Seat, Skoda, Smart, Subaru, Suzuki, Toyota, Volkswagen, Volvo."
-          ></p>
+          ></p> -->
           <div class="brands-grid animate-on-scroll" id="brands-grid"></div>
           <div class="brands-cta animate-on-scroll">
             <button

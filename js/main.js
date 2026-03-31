@@ -8,7 +8,7 @@ const servicesData = [
     { pl: "Serwis układu hamulcowego", uk: "Сервіс гальмівної системи", icon: '<i class="fa-solid fa-circle-stop"></i>', priceFrom: 150, priceTo: 500 },
     { pl: "Diagnostyka i naprawa elektryki", uk: "Діагностика та ремонт електрики", icon: '<i class="fa-solid fa-bolt"></i>', priceFrom: 100, priceTo: 600 },
     { pl: "Wymiana elementów zawieszenia", uk: "Заміна елементів підвіски", icon: '<i class="fa-solid fa-wrench"></i>', priceFrom: 300, priceTo: 1200 },
-    { pl: "Wymiana klocków i tarcz hamulcowych", uk: "Заміна гальмівних колодок і дисків", icon: '<i class="fa-duotone fa-regular fa-brake-warning"></i>', priceFrom: 200, priceTo: 600 },
+    { pl: "Wymiana klocków i tarcz hamulcowych", uk: "Заміна гальмівних колодок і дисків", icon: '<i class="fa-solid fa-triangle-exclamation"></i>', priceFrom: 200, priceTo: 600 },
     { pl: "Wymiana opon", uk: "Заміна шин", icon: '<i class="fa-solid fa-rotate"></i>', priceFrom: 100, priceTo: 250 },
     { pl: "Napełnianie i odgrzybianie klimatyzacji", uk: "Заправка та дезінфекція кондиціонера", icon: '<i class="fa-solid fa-wind"></i>', priceFrom: 120, priceTo: 200 },
     { pl: "Przegląd i serwis okresowy", uk: "Планове технічне обслуговування", icon: '<i class="fa-solid fa-clipboard-check"></i>', priceFrom: 200, priceTo: 500 },
@@ -45,6 +45,369 @@ let selectedDate = null;
 let bookedDates = {};
 let calendarDate = new Date();
 let swiperPos = 0;
+
+// ===================== HERO SCROLL ANIMATION =====================
+const HeroAnimation = {
+    // Configuration
+    config: {
+        startFrame: 21,
+        totalFrames: 100, // frames 21-119 = 99 frames
+        framePath: 'images/hero_animate/frame_',
+        frameExtension: '.jpeg',
+        scrollStart: 0,     // scroll position where animation starts (as % of hero height)
+        scrollEnd: 1,       // scroll position where animation ends (as % of hero height)
+        textFadeStart: 0.05, // when text starts fading (as % of hero height)
+        textFadeEnd: 0.25,   // when text is fully faded
+        titleFadeStart: 0.08,
+        titleFadeEnd: 0.32,
+        buttonsFadeStart: 0.15,
+        buttonsFadeEnd: 0.42,
+        baseOpacity: 0.5,    // base opacity for the frame image
+        wheelSensitivity: 0.0008,
+        touchSensitivity: 0.0012,
+        progressEase: 0.12,
+    },
+
+    // State
+    state: {
+        currentFrame: 21,
+        lastScrollY: 0,
+        scrollProgress: 0,
+        targetProgress: 0,
+        isAnimating: false,
+        rafId: null,
+        heroHeight: 0,
+        heroTop: 0,
+        preloadCache: {},
+        imagesLoaded: 0,
+        totalImages: 0,
+        touchStartY: null,
+    },
+
+    // Initialize the hero animation
+    init() {
+        const frameImg = document.getElementById('hero-frame');
+        if (!frameImg) return;
+
+        const container = document.getElementById('hero-animation-container');
+        if (container) {
+            container.classList.add('is-active');
+        }
+
+        // Remove no-js class if present
+        document.documentElement.classList.remove('no-js');
+
+        // Get hero dimensions
+        this.updateHeroDimensions();
+
+        // Preload images
+        this.preloadImages();
+        this.setProgress(0, true);
+
+        // Bind scroll event with throttling
+        let scrollTicking = false;
+        window.addEventListener('scroll', () => {
+            if (!scrollTicking) {
+                requestAnimationFrame(() => {
+                    this.onScroll();
+                    scrollTicking = false;
+                });
+                scrollTicking = true;
+            }
+        }, { passive: true });
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            this.updateHeroDimensions();
+        }, { passive: true });
+
+        // Block page scroll at top until hero animation reaches last frame.
+        window.addEventListener('wheel', (e) => this.onWheel(e), { passive: false });
+        window.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: true });
+        window.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
+    },
+
+    // Update hero dimensions
+    updateHeroDimensions() {
+        const hero = document.getElementById('hero');
+        if (hero) {
+            const rect = hero.getBoundingClientRect();
+            this.state.heroHeight = rect.height;
+            this.state.heroTop = rect.top + window.scrollY;
+        }
+    },
+
+    // Preload images for smooth animation
+    preloadImages() {
+        const { startFrame, totalFrames, framePath, frameExtension } = this.config;
+        this.state.totalImages = totalFrames;
+
+        // Preload first chunk immediately for fast first interaction.
+        const immediatePreload = Math.min(20, totalFrames);
+
+        for (let i = 0; i < immediatePreload; i++) {
+            const frameNum = startFrame + i;
+            this.preloadFrame(frameNum);
+        }
+
+        // Preload remaining frames in idle time to reduce frame drops while scrolling.
+        const preloadRest = () => {
+            for (let i = immediatePreload; i < totalFrames; i++) {
+                const frameNum = startFrame + i;
+                if (!this.state.preloadCache[frameNum]) {
+                    this.preloadFrame(frameNum);
+                }
+            }
+        };
+
+        if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(preloadRest, { timeout: 2000 });
+        } else {
+            setTimeout(preloadRest, 120);
+        }
+    },
+
+    preloadFrame(frameNum) {
+        const { framePath, frameExtension } = this.config;
+        if (this.state.preloadCache[frameNum]) return;
+        const frameName = this.getFrameName(frameNum);
+        const img = new Image();
+        img.src = `${framePath}${frameName}${frameExtension}`;
+        img.onload = () => {
+            this.state.imagesLoaded++;
+            this.state.preloadCache[frameNum] = img;
+        };
+    },
+
+    // Get zero-padded frame name
+    getFrameName(frameNum) {
+        return String(frameNum).padStart(6, '0');
+    },
+
+    // Handle scroll event
+    onScroll() {
+        const scrollY = window.scrollY;
+        const { heroHeight, heroTop } = this.state;
+        const { scrollStart, scrollEnd } = this.config;
+
+        // Calculate scroll progress within hero section
+        const heroBottom = heroTop + heroHeight;
+
+        // Check if we're in the hero section
+        if (scrollY + window.innerHeight < heroTop || scrollY > heroBottom) {
+            return;
+        }
+
+        // If user manually moves back to page top, sync frame back to first.
+        if (scrollY <= heroTop + 1 && this.state.scrollProgress <= 0) {
+            this.setProgress(0);
+        }
+    },
+
+    onWheel(e) {
+        if (!this.shouldCaptureScroll(e.deltaY)) return;
+        e.preventDefault();
+        const delta = e.deltaY * this.config.wheelSensitivity;
+        this.setProgress(this.state.scrollProgress + delta);
+    },
+
+    onTouchStart(e) {
+        if (!e.touches || !e.touches[0]) return;
+        this.state.touchStartY = e.touches[0].clientY;
+    },
+
+    onTouchMove(e) {
+        if (!e.touches || !e.touches[0] || this.state.touchStartY == null) return;
+        const currentY = e.touches[0].clientY;
+        const swipeDelta = this.state.touchStartY - currentY;
+        if (!this.shouldCaptureScroll(swipeDelta)) {
+            this.state.touchStartY = currentY;
+            return;
+        }
+        e.preventDefault();
+        const delta = swipeDelta * this.config.touchSensitivity;
+        this.setProgress(this.state.scrollProgress + delta);
+        this.state.touchStartY = currentY;
+    },
+
+    shouldCaptureScroll(deltaY) {
+        const { heroTop } = this.state;
+        const scrollY = window.scrollY;
+        const atHeroTop = scrollY <= heroTop + 2;
+        if (!atHeroTop) return false;
+        const goingDown = deltaY > 0;
+        const goingUp = deltaY < 0;
+        const canAdvance = this.state.scrollProgress < 1 && goingDown;
+        const canReverse = this.state.scrollProgress > 0 && goingUp;
+        return canAdvance || canReverse;
+    },
+
+    setProgress(nextProgress, immediate = false) {
+        const { scrollStart, scrollEnd, textFadeStart, textFadeEnd } = this.config;
+        const clamped = Math.max(scrollStart, Math.min(scrollEnd, nextProgress));
+        this.state.targetProgress = clamped;
+
+        if (immediate) {
+            this.state.scrollProgress = clamped;
+            this.updateFrame(clamped);
+            this.updateTextAnimations(clamped, textFadeStart, textFadeEnd);
+            return;
+        }
+
+        this.startProgressAnimation();
+    },
+
+    startProgressAnimation() {
+        if (this.state.rafId) return;
+
+        const step = () => {
+            const { textFadeStart, textFadeEnd } = this.config;
+            const current = this.state.scrollProgress;
+            const target = this.state.targetProgress;
+            const diff = target - current;
+
+            if (Math.abs(diff) < 0.0015) {
+                this.state.scrollProgress = target;
+                this.updateFrame(target);
+                this.updateTextAnimations(target, textFadeStart, textFadeEnd);
+                this.state.rafId = null;
+                return;
+            }
+
+            // Ease towards target progress for smoother frame transitions.
+            this.state.scrollProgress = current + diff * this.config.progressEase;
+            this.updateFrame(this.state.scrollProgress);
+            this.updateTextAnimations(this.state.scrollProgress, textFadeStart, textFadeEnd);
+            this.state.rafId = requestAnimationFrame(step);
+        };
+
+        this.state.rafId = requestAnimationFrame(step);
+    },
+
+    // Update the current frame based on scroll progress
+    updateFrame(progress) {
+        const { startFrame, totalFrames } = this.config;
+        const frameImg = document.getElementById('hero-frame');
+        if (!frameImg) return;
+
+        // Calculate which frame to show
+        const targetFrame = startFrame + Math.floor(progress * (totalFrames - 1));
+
+        if (targetFrame !== this.state.currentFrame) {
+            this.state.currentFrame = targetFrame;
+            const frameName = this.getFrameName(targetFrame);
+            const src = `${this.config.framePath}${frameName}${this.config.frameExtension}`;
+
+            // Check if image is preloaded
+            if (this.state.preloadCache[targetFrame]) {
+                frameImg.src = src;
+            } else {
+                // Load on demand
+                const img = new Image();
+                img.src = src;
+                img.onload = () => {
+                    this.state.preloadCache[targetFrame] = img;
+                    frameImg.src = src;
+                };
+            }
+        }
+    },
+
+    // Update text element animations
+    updateTextAnimations(progress, fadeStart, fadeEnd) {
+        const elements = document.querySelectorAll('.hero-animate-element');
+        const title = document.querySelector('.hero-title');
+        const buttons = document.querySelector('.hero-btns');
+        const heroContent = document.querySelector('.hero-content');
+
+        elements.forEach(el => {
+            const animationType = el.getAttribute('data-animation') || 'fade-up';
+
+            // Calculate opacity based on progress
+            let opacity = 1;
+            if (progress >= fadeStart) {
+                opacity = 1 - Math.min(1, (progress - fadeStart) / (fadeEnd - fadeStart));
+            }
+
+            el.style.opacity = opacity;
+
+            // Apply transform based on animation type
+            if (animationType === 'fade-up') {
+                const translateY = (progress - fadeStart) / (fadeEnd - fadeStart) * -40;
+                el.style.transform = `translateY(${Math.min(0, Math.max(-40, translateY))}px)`;
+            } else if (animationType === 'fade-down') {
+                const translateY = (progress - fadeStart) / (fadeEnd - fadeStart) * 30;
+                el.style.transform = `translateY(${Math.min(30, Math.max(0, translateY))}px)`;
+            }
+
+            // Disable pointer events when fully faded
+            if (opacity <= 0.01) {
+                el.style.pointerEvents = 'none';
+            } else {
+                el.style.pointerEvents = 'auto';
+            }
+        });
+
+        // Dedicated fade-out for title and CTA buttons.
+        if (title) {
+            const titleOpacity = this.getFadeOpacity(progress, this.config.titleFadeStart, this.config.titleFadeEnd);
+            const titleShift = this.getShift(progress, this.config.titleFadeStart, this.config.titleFadeEnd, -56, 0);
+            title.style.opacity = titleOpacity;
+            title.style.transform = `translateY(${titleShift}px)`;
+            title.style.pointerEvents = titleOpacity <= 0.01 ? 'none' : 'auto';
+        }
+
+        if (buttons) {
+            const buttonsOpacity = this.getFadeOpacity(progress, this.config.buttonsFadeStart, this.config.buttonsFadeEnd);
+            const buttonsShift = this.getShift(progress, this.config.buttonsFadeStart, this.config.buttonsFadeEnd, 34, 0);
+            buttons.style.opacity = buttonsOpacity;
+            buttons.style.transform = `translateY(${buttonsShift}px)`;
+            buttons.style.pointerEvents = buttonsOpacity <= 0.01 ? 'none' : 'auto';
+        }
+
+        // Fade out the whole hero content block during the scroll animation.
+        if (heroContent) {
+            const contentOpacity = this.getFadeOpacity(progress, 0.06, 0.55);
+            const contentShift = this.getShift(progress, 0.06, 0.55, 28, 0);
+            heroContent.style.opacity = contentOpacity;
+            heroContent.style.transform = `translateY(${contentShift}px)`;
+            heroContent.style.pointerEvents = contentOpacity <= 0.01 ? 'none' : 'auto';
+        }
+    },
+
+    getFadeOpacity(progress, fadeStart, fadeEnd) {
+        if (progress <= fadeStart) return 1;
+        if (progress >= fadeEnd) return 0;
+        return 1 - ((progress - fadeStart) / (fadeEnd - fadeStart));
+    },
+
+    getShift(progress, fadeStart, fadeEnd, maxShift, minShift = 0) {
+        if (progress <= fadeStart) return minShift;
+        if (progress >= fadeEnd) return maxShift;
+        const ratio = (progress - fadeStart) / (fadeEnd - fadeStart);
+        return minShift + (maxShift - minShift) * ratio;
+    },
+
+    // Reset animation state (when returning to top)
+    reset() {
+        this.state.currentFrame = this.config.startFrame;
+        this.state.scrollProgress = 0;
+
+        const frameImg = document.getElementById('hero-frame');
+        if (frameImg) {
+            const frameName = this.getFrameName(this.config.startFrame);
+            frameImg.src = `${this.config.framePath}${frameName}${this.config.frameExtension}`;
+        }
+
+        // Reset text elements
+        const elements = document.querySelectorAll('.hero-animate-element');
+        elements.forEach(el => {
+            el.style.opacity = '';
+            el.style.transform = '';
+            el.style.pointerEvents = '';
+        });
+    }
+};
 
 // Simulate booked dates
 function genBookedDates() {
@@ -564,6 +927,9 @@ window.addEventListener('DOMContentLoaded', () => {
     buildBookingSelect();
     setLang(currentLang);
     setTimeout(initScrollAnimations, 200);
+
+    // Initialize hero scroll animation
+    HeroAnimation.init();
 });
 
 window.addEventListener('resize', () => {
