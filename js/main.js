@@ -66,6 +66,10 @@ const HeroAnimation = {
         wheelSensitivity: 0.0008,
         touchSensitivity: 0.0012,
         progressEase: 0.12,
+        mobileWheelSensitivity: 0.00045,
+        mobileTouchSensitivity: 0.0007,
+        mobileProgressEase: 0.09,
+        mobileScrollRangeFactor: 1.45,
     },
 
     // State
@@ -82,12 +86,14 @@ const HeroAnimation = {
         imagesLoaded: 0,
         totalImages: 0,
         touchStartY: null,
+        isMobile: false,
     },
 
     // Initialize the hero animation
     init() {
         const frameImg = document.getElementById('hero-frame');
         if (!frameImg) return;
+        this.state.isMobile = this.detectMobile();
 
         const container = document.getElementById('hero-animation-container');
         if (container) {
@@ -118,6 +124,7 @@ const HeroAnimation = {
 
         // Handle resize
         window.addEventListener('resize', () => {
+            this.state.isMobile = this.detectMobile();
             this.updateHeroDimensions();
         }, { passive: true });
 
@@ -135,6 +142,10 @@ const HeroAnimation = {
             this.state.heroHeight = rect.height;
             this.state.heroTop = rect.top + window.scrollY;
         }
+    },
+
+    detectMobile() {
+        return window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
     },
 
     // Preload images for smooth animation
@@ -198,6 +209,15 @@ const HeroAnimation = {
             return;
         }
 
+        // On mobile we avoid hard scroll-lock and drive frames by natural page scroll.
+        if (this.state.isMobile) {
+            const scrollRange = Math.max(1, window.innerHeight * this.config.mobileScrollRangeFactor);
+            const passiveProgress = (scrollY - heroTop) / scrollRange;
+            const clamped = Math.max(scrollStart, Math.min(scrollEnd, passiveProgress));
+            this.setProgress(clamped);
+            return;
+        }
+
         // If user manually moves back to page top, sync frame back to first.
         if (scrollY <= heroTop + 1 && this.state.scrollProgress <= 0) {
             this.setProgress(0);
@@ -207,7 +227,8 @@ const HeroAnimation = {
     onWheel(e) {
         if (!this.shouldCaptureScroll(e.deltaY)) return;
         e.preventDefault();
-        const delta = e.deltaY * this.config.wheelSensitivity;
+        const sensitivity = this.state.isMobile ? this.config.mobileWheelSensitivity : this.config.wheelSensitivity;
+        const delta = e.deltaY * sensitivity;
         this.setProgress(this.state.scrollProgress + delta);
     },
 
@@ -225,12 +246,14 @@ const HeroAnimation = {
             return;
         }
         e.preventDefault();
-        const delta = swipeDelta * this.config.touchSensitivity;
+        const sensitivity = this.state.isMobile ? this.config.mobileTouchSensitivity : this.config.touchSensitivity;
+        const delta = swipeDelta * sensitivity;
         this.setProgress(this.state.scrollProgress + delta);
         this.state.touchStartY = currentY;
     },
 
     shouldCaptureScroll(deltaY) {
+        if (this.state.isMobile) return false;
         const { heroTop } = this.state;
         const scrollY = window.scrollY;
         const atHeroTop = scrollY <= heroTop + 2;
@@ -275,7 +298,8 @@ const HeroAnimation = {
             }
 
             // Ease towards target progress for smoother frame transitions.
-            this.state.scrollProgress = current + diff * this.config.progressEase;
+            const ease = this.state.isMobile ? this.config.mobileProgressEase : this.config.progressEase;
+            this.state.scrollProgress = current + diff * ease;
             this.updateFrame(this.state.scrollProgress);
             this.updateTextAnimations(this.state.scrollProgress, textFadeStart, textFadeEnd);
             this.state.rafId = requestAnimationFrame(step);
@@ -367,8 +391,10 @@ const HeroAnimation = {
 
         // Fade out the whole hero content block during the scroll animation.
         if (heroContent) {
-            const contentOpacity = this.getFadeOpacity(progress, 0.06, 0.55);
-            const contentShift = this.getShift(progress, 0.06, 0.55, 28, 0);
+            const contentFadeStart = this.state.isMobile ? 0.14 : 0.06;
+            const contentFadeEnd = this.state.isMobile ? 0.72 : 0.55;
+            const contentOpacity = this.getFadeOpacity(progress, contentFadeStart, contentFadeEnd);
+            const contentShift = this.getShift(progress, contentFadeStart, contentFadeEnd, 28, 0);
             heroContent.style.opacity = contentOpacity;
             heroContent.style.transform = `translateY(${contentShift}px)`;
             heroContent.style.pointerEvents = contentOpacity <= 0.01 ? 'none' : 'auto';

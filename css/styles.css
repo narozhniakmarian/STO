@@ -1799,7 +1799,12 @@
 
  /* ===================== RESPONSIVE ===================== */
  @media (max-width: 900px) {
-     .desktop-nav {
+    .hero-frame {
+        transform: scale(0.9);
+        transform-origin: center;
+    }
+
+    nav.desktop-nav {
          display: none;
      }
 
@@ -1850,6 +1855,10 @@
  }
 
  @media (max-width: 600px) {
+    .hero-frame {
+        transform: scale(0.86);
+    }
+
      section {
          padding: 60px 16px;
      }
