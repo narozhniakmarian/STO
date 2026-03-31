@@ -454,8 +454,9 @@ bookedDates = genBookedDates();
 // ===================== LANG =====================
 function setLang(lang) {
     currentLang = lang;
-    document.getElementById('lang-pl').classList.toggle('active', lang === 'pl');
-    document.getElementById('lang-uk').classList.toggle('active', lang === 'uk');
+    document.querySelectorAll('[data-lang-option]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-lang-option') === lang);
+    });
 
     document.querySelectorAll('[data-pl]').forEach(el => {
         const txt = el.getAttribute('data-' + lang);

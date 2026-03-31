@@ -253,6 +253,28 @@
      cursor: pointer;
  }
 
+.mobile-menu-lang {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 8px;
+}
+
+.mobile-menu-lang-label {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 700;
+}
+
+.mobile-menu-lang .lang-switcher {
+    background: rgba(255, 255, 255, 0.1);
+}
+
  /* ===================== PAGES ===================== */
  .page {
      display: none;
@@ -1815,6 +1837,14 @@
      .btn-contact-header {
          display: none;
      }
+
+    .header-controls .lang-switcher {
+        display: none;
+    }
+
+    .mobile-menu-lang {
+        display: flex;
+    }
 
      .about-grid {
          grid-template-columns: 1fr;
